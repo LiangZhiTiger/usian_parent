@@ -76,6 +76,15 @@ public interface ItemServiceFeignClient {
     @RequestMapping("/service/itemParam/selectItemParamAll")
     PageResult selectItemParamAll(@RequestParam Integer page,@RequestParam Integer rows);
 
+    /**
+     * 添加类目规格模板
+     * @param itemCatId
+     * @param paramData
+     * @return
+     */
     @RequestMapping("/service/itemParam/insertItemParam")
     Integer insertItemParam(@RequestParam Long itemCatId,@RequestParam String paramData);
+
+    @RequestMapping("/service/itemParam/deleteItemParamById")
+    Integer deleteItemParamById(@RequestParam Long id);
 }

@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.ReportAsSingleViolation;
+
 @RestController
 @RequestMapping("/service/itemParam")
 public class ItemParemController {
@@ -40,8 +42,24 @@ public class ItemParemController {
         return itemParamService.selectItemParamAll(page,rows);
     }
 
+    /**
+     * 添加类目规格模板
+     * @param itemCatId
+     * @param paramData
+     * @return
+     */
     @RequestMapping("/insertItemParam")
     public Integer insertItemParam(Long itemCatId,String paramData){
         return itemParamService.insertItemParam(itemCatId,paramData);
+    }
+
+    /**
+     * 删除类目规格模板
+     * @param id
+     * @return
+     */
+    @RequestMapping("/deleteItemParamById")
+    public Integer deleteItemParamById(Long id){
+        return itemParamService.deleteItemParamById(id);
     }
 }
