@@ -4,6 +4,7 @@ import com.usian.pojo.TbItemParam;
 import com.usian.service.ItemParamService;
 import com.usian.utils.PageResult;
 import com.usian.utils.Result;
+import org.omg.CORBA.IRObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,5 +38,10 @@ public class ItemParemController {
     @RequestMapping("/selectItemParamAll")
     public PageResult selectItemParamAll(Integer page,Integer rows){
         return itemParamService.selectItemParamAll(page,rows);
+    }
+
+    @RequestMapping("/insertItemParam")
+    public Integer insertItemParam(Long itemCatId,String paramData){
+        return itemParamService.insertItemParam(itemCatId,paramData);
     }
 }

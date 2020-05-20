@@ -46,4 +46,13 @@ public class ItemParemController {
         }
         return Result.error("查无结果");
     }
+
+    @RequestMapping("/insertItemParam")
+    public Result insertItemParam(Long itemCatId,String paramData){
+        Integer num = itemServiceFeignClient.insertItemParam(itemCatId,paramData);
+        if (num==1){
+            return  Result.ok();
+        }
+        return Result.error("添加失败,该类目已有规格模板");
+    }
 }

@@ -7,4 +7,6 @@ public interface ItemParamService {
     TbItemParam selectItemParamByItemCatId(Long itemCatId);
 
     PageResult selectItemParamAll(Integer page, Integer rows);
+
+    Integer insertItemParam(Long itemCatId, String paramData);
 }

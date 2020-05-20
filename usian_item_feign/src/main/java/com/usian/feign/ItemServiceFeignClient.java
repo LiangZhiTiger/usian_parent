@@ -75,4 +75,7 @@ public interface ItemServiceFeignClient {
      */
     @RequestMapping("/service/itemParam/selectItemParamAll")
     PageResult selectItemParamAll(@RequestParam Integer page,@RequestParam Integer rows);
+
+    @RequestMapping("/service/itemParam/insertItemParam")
+    Integer insertItemParam(@RequestParam Long itemCatId,@RequestParam String paramData);
 }

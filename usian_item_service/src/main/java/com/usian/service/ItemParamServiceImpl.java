@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -43,8 +44,27 @@ public class ItemParamServiceImpl implements ItemParamService {
         PageInfo<TbItemParam> pageInfo = new PageInfo<>(itemParamList);
         PageResult pageResult = new PageResult();
         pageResult.setPageIndex(page);
-        pageResult.setTotalPage((int) pageInfo.getTotal());
+        pageResult.setTotalPage(pageInfo.getPages());
         pageResult.setResult(pageInfo.getList());
         return pageResult;
+    }
+
+    @Override
+    public Integer insertItemParam(Long itemCatId, String paramData) {
+        TbItemParamExample itemParamExample = new TbItemParamExample();
+        TbItemParamExample.Criteria criteria = itemParamExample.createCriteria();
+        criteria.andItemCatIdEqualTo(itemCatId);
+        List<TbItemParam> tbItemParamList = tbItemParamMapper.selectByExample(itemParamExample);
+        if (tbItemParamList.size()>0){
+            return 0;
+        }
+
+        TbItemParam tbItemParam = new TbItemParam();
+        tbItemParam.setItemCatId(itemCatId);
+        tbItemParam.setParamData(paramData);
+        Date date = new Date();
+        tbItemParam.setCreated(date);
+        tbItemParam.setUpdated(date);
+        return tbItemParamMapper.insertSelective(tbItemParam);
     }
 }
