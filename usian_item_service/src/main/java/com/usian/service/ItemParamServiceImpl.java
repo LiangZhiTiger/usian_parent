@@ -33,4 +33,18 @@ public class ItemParamServiceImpl implements ItemParamService {
 
         return tbItemParamList.get(0);
     }
+
+    @Override
+    public PageResult selectItemParamAll(Integer page, Integer rows) {
+        PageHelper.startPage(page,rows);
+        TbItemParamExample example = new TbItemParamExample();
+        example.setOrderByClause("updated DESC");
+        List<TbItemParam> itemParamList = tbItemParamMapper.selectByExampleWithBLOBs(example);
+        PageInfo<TbItemParam> pageInfo = new PageInfo<>(itemParamList);
+        PageResult pageResult = new PageResult();
+        pageResult.setPageIndex(page);
+        pageResult.setTotalPage((int) pageInfo.getTotal());
+        pageResult.setResult(pageInfo.getList());
+        return pageResult;
+    }
 }
