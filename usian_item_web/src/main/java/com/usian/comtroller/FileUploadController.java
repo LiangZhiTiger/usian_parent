@@ -1,9 +1,7 @@
 package com.usian.comtroller;
 
 import com.github.tobato.fastdfs.domain.StorePath;
-import com.github.tobato.fastdfs.domain.ThumbImageConfig;
 import com.github.tobato.fastdfs.service.FastFileStorageClient;
-import com.usian.config.FastClientImporter;
 import com.usian.utils.Result;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +15,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 图片上传
+ */
 @RestController
 @RequestMapping("/file")
 public class FileUploadController {
@@ -24,38 +25,31 @@ public class FileUploadController {
     @Autowired
     private FastFileStorageClient storageClient;
 
-    @Autowired
-    private ThumbImageConfig thumbImageConfig;
-
-    private static final List<String> CONTENT_TYPES = Arrays.asList("image/jpg","image/gif","image/jpeg","image/png");
+    private static final List<String> contentTypeList = Arrays.asList("image/jpeg","image/gif","image/png");
 
     /**
-     * 上传图片
-     * @param file
-     * @return
-     * @throws IOException
+     * 图片上传
      */
     @RequestMapping("/upload")
     public Result fileUpload(MultipartFile file) throws IOException {
-        //判断文件类型
-        if(!CONTENT_TYPES.contains(file.getContentType())){
-            return Result.error("文件格式不对");
-        }
-        //判断文件是否为空
-        BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
-        if(bufferedImage==null){
-            return Result.error("文件为空");
-        }
-        //保存到服务器
-        String originalFilename = file.getOriginalFilename();
-        StorePath storePath = storageClient.uploadFile(file.getInputStream(), file.getSize(), StringUtils.substringAfterLast(originalFilename, "."), null);
-        System.out.println(storePath.getFullPath());
+            // 校验文件的类型
+            if (!contentTypeList.contains(file.getContentType())){
+                // 文件类型不合法，直接返回
+                return Result.error("文件类型不合法:");
+            }
 
-        //生成url返回
+            // 校验文件的内容
+            BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
+            if (bufferedImage == null) {
+                return Result.error("文件内容不合法");
+            }
+
+            // 上传文件
+        String filename = file.getOriginalFilename();
+        String lastName = StringUtils.substringAfterLast(filename,".");
+        StorePath storePath = storageClient.uploadFile(file.getInputStream(), file.getSize(), lastName, null);
+
+        // 生成url地址，返回
         return Result.ok("http://image.usian.com/"+storePath.getFullPath());
     }
-
-
-
-
 }

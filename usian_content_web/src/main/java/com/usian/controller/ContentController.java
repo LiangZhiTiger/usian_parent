@@ -15,6 +15,13 @@ public class ContentController {
     @Autowired
     private ContentServiceFeign contentServiceFeign;
 
+    /**
+     * 查询分类内容具体数据
+     * @param page
+     * @param rows
+     * @param categoryId
+     * @return
+     */
     @RequestMapping("/selectTbContentAllByCategoryId")
     public Result selectTbContentAllByCategoryId(@RequestParam(defaultValue = "1") Integer page,@RequestParam(defaultValue = "20") Integer rows,Long categoryId){
         PageResult pageResult = contentServiceFeign.selectTbContentAllByCategoryId(page,rows,categoryId);
@@ -24,6 +31,11 @@ public class ContentController {
         return Result.error("查无结果");
     }
 
+    /**
+     * 添加分类内容具体数据
+     * @param tbContent
+     * @return
+     */
     @RequestMapping("/insertTbContent")
     public Result insertTbContent(TbContent tbContent){
         Integer num = contentServiceFeign.insertTbContent(tbContent);
@@ -31,5 +43,19 @@ public class ContentController {
             return Result.ok();
         }
         return Result.error("添加失败");
+    }
+
+    /**
+     * 删除分类内容具体数据
+     * @param ids
+     * @return
+     */
+    @RequestMapping("/deleteContentByIds")
+    public Result deleteContentByIds(Long ids){
+        Integer num = contentServiceFeign.deleteContentByIds(ids);
+        if (num==1){
+            return Result.ok();
+        }
+        return Result.error("删除失败");
     }
 }

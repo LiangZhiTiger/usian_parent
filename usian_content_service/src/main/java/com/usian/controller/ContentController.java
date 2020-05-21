@@ -15,13 +15,35 @@ public class ContentController {
     @Autowired
     private ContentService contentService;
 
+    /**
+     * 查询分类内容具体数据
+     * @param page
+     * @param rows
+     * @param categoryId
+     * @return
+     */
     @RequestMapping("/selectTbContentAllByCategoryId")
     public PageResult selectTbContentAllByCategoryId(Integer page,Integer rows,Long categoryId){
         return contentService.selectTbContentAllByCategoryId(page,rows,categoryId);
     }
 
+    /**
+     * 添加分类内容具体数据
+     * @param tbContent
+     * @return
+     */
     @RequestMapping("/insertTbContent")
     public Integer insertTbContent(@RequestBody TbContent tbContent){
         return contentService.insertTbContent(tbContent);
+    }
+
+    /**
+     * 删除分类内容具体数据
+     * @param ids
+     * @return
+     */
+    @RequestMapping("/deleteContentByIds")
+    public Integer deleteContentByIds(Long ids){
+        return contentService.deleteContentByIds(ids);
     }
 }

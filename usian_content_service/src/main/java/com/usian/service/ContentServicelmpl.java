@@ -47,4 +47,9 @@ public class ContentServicelmpl implements ContentService {
         tbContent.setUpdated(date);
         return tbContentMapper.insertSelective(tbContent);
     }
+
+    @Override
+    public Integer deleteContentByIds(Long ids) {
+        return tbContentMapper.deleteByPrimaryKey(ids);
+    }
 }

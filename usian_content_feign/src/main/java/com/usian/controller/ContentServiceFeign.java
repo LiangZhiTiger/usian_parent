@@ -44,9 +44,29 @@ public interface ContentServiceFeign {
     @RequestMapping("/service/contentCategory/updateContentCategory")
     Integer updateContentCategory(TbContentCategory tbContentCategory);
 
+    /**
+     * 查询分类内容具体数据
+     * @param page
+     * @param rows
+     * @param categoryId
+     * @return
+     */
     @RequestMapping("/service/content/selectTbContentAllByCategoryId")
     PageResult selectTbContentAllByCategoryId(@RequestParam Integer page,@RequestParam Integer rows,@RequestParam Long categoryId);
 
+    /**
+     * 添加分类内容具体数据
+     * @param tbContent
+     * @return
+     */
     @RequestMapping("/service/content/insertTbContent")
     Integer insertTbContent(TbContent tbContent);
+
+    /**
+     * 删除分类内容具体数据
+     * @param ids
+     * @return
+     */
+    @RequestMapping("/service/content/deleteContentByIds")
+    Integer deleteContentByIds(@RequestParam Long ids);
 }

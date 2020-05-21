@@ -7,4 +7,6 @@ public interface ContentService {
     PageResult selectTbContentAllByCategoryId(Integer page, Integer rows, Long categoryId);
 
     Integer insertTbContent(TbContent tbContent);
+
+    Integer deleteContentByIds(Long ids);
 }
