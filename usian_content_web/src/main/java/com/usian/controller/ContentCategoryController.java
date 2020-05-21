@@ -24,4 +24,13 @@ public class ContentCategoryController {
         }
         return Result.error("查无结果");
     }
+
+    @RequestMapping("/insertContentCategory")
+    public Result insertContentCategory(TbContentCategory tbContentCategory){
+        Integer num = contentServiceFeign.insertContentCategory(tbContentCategory);
+        if (num==1){
+            return Result.ok();
+        }
+        return Result.error("添加失败");
+    }
 }

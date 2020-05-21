@@ -11,5 +11,8 @@ import java.util.List;
 public interface ContentServiceFeign {
 
     @RequestMapping("/service/contentCategory/selectContentCategoryByParentId")
-    public List<TbContentCategory> selectContentCategoryByParentId(@RequestParam Long id);
+    List<TbContentCategory> selectContentCategoryByParentId(@RequestParam Long id);
+
+    @RequestMapping("/service/contentCategory/insertContentCategory")
+    Integer insertContentCategory(TbContentCategory tbContentCategory);
 }

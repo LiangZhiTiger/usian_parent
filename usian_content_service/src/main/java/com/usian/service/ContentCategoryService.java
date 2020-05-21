@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface ContentCategoryService {
     List<TbContentCategory> selectContentCategoryByParentId(Long id);
+
+    Integer insertContentCategory(TbContentCategory tbContentCategory);
 }
