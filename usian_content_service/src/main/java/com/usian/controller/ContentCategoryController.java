@@ -16,18 +16,43 @@ public class ContentCategoryController {
     @Autowired
     private ContentCategoryService contentCategoryService;
 
+    /**
+     * 查询分类内容
+     * @param id
+     * @return
+     */
     @RequestMapping("/selectContentCategoryByParentId")
     public List<TbContentCategory> selectContentCategoryByParentId(Long id){
         return contentCategoryService.selectContentCategoryByParentId(id);
     }
 
+    /**
+     * 添加分类内容
+     * @param tbContentCategory
+     * @return
+     */
     @RequestMapping("/insertContentCategory")
     public Integer insertContentCategory(@RequestBody TbContentCategory tbContentCategory){
         return contentCategoryService.insertContentCategory(tbContentCategory);
     }
 
+    /**
+     * 删除分类内容
+     * @param categoryId
+     * @return
+     */
     @RequestMapping("/deleteContentCategoryById")
     public Integer deleteContentCategoryById(Long categoryId){
         return contentCategoryService.deleteContentCategoryById(categoryId);
+    }
+
+    /**
+     * 修改分类内容
+     * @param tbContentCategory
+     * @return
+     */
+    @RequestMapping("/updateContentCategory")
+    public Integer updateContentCategory(@RequestBody TbContentCategory tbContentCategory){
+        return contentCategoryService.updateContentCategory(tbContentCategory);
     }
 }

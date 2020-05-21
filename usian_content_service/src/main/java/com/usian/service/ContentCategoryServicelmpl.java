@@ -69,5 +69,11 @@ public class ContentCategoryServicelmpl implements ContentCategoryService {
         return 200;
     }
 
+    @Override
+    public Integer updateContentCategory(TbContentCategory tbContentCategory) {
+        tbContentCategory.setUpdated(new Date());
+        return tbContentCategoryMapper.updateByPrimaryKeySelective(tbContentCategory);
+    }
+
 
 }

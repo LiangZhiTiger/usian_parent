@@ -16,6 +16,11 @@ public class ContentCategoryController {
     @Autowired
     private ContentServiceFeign contentServiceFeign;
 
+    /**
+     * 查询分类内容
+     * @param id
+     * @return
+     */
     @RequestMapping("/selectContentCategoryByParentId")
     public Result selectContentCategoryByParentId(@RequestParam(defaultValue = "0") Long id){
         List<TbContentCategory> tbContentCategoryList = contentServiceFeign.selectContentCategoryByParentId(id);
@@ -25,6 +30,11 @@ public class ContentCategoryController {
         return Result.error("查无结果");
     }
 
+    /**
+     * 添加分类内容
+     * @param tbContentCategory
+     * @return
+     */
     @RequestMapping("/insertContentCategory")
     public Result insertContentCategory(TbContentCategory tbContentCategory){
         Integer num = contentServiceFeign.insertContentCategory(tbContentCategory);
@@ -34,6 +44,11 @@ public class ContentCategoryController {
         return Result.error("添加失败");
     }
 
+    /**
+     * 删除分类内容
+     * @param categoryId
+     * @return
+     */
     @RequestMapping("/deleteContentCategoryById")
     public Result deleteContentCategoryById(Long categoryId){
         Integer num = contentServiceFeign.deleteContentCategoryById(categoryId);
@@ -41,5 +56,19 @@ public class ContentCategoryController {
             return Result.ok();
         }
         return Result.error("删除失败");
+    }
+
+    /**
+     * 修改分类内容
+     * @param tbContentCategory
+     * @return
+     */
+    @RequestMapping("/updateContentCategory")
+    public Result updateContentCategory(TbContentCategory tbContentCategory){
+        Integer num = contentServiceFeign.updateContentCategory(tbContentCategory);
+        if (num==1){
+            return Result.ok("200");
+        }
+        return Result.error("修改失败");
     }
 }
