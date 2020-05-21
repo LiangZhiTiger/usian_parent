@@ -25,4 +25,9 @@ public class ContentCategoryController {
     public Integer insertContentCategory(@RequestBody TbContentCategory tbContentCategory){
         return contentCategoryService.insertContentCategory(tbContentCategory);
     }
+
+    @RequestMapping("/deleteContentCategoryById")
+    public Integer deleteContentCategoryById(Long categoryId){
+        return contentCategoryService.deleteContentCategoryById(categoryId);
+    }
 }

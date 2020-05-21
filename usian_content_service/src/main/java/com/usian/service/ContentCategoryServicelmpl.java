@@ -1,11 +1,13 @@
 package com.usian.service;
 
 import com.usian.mapper.TbContentCategoryMapper;
+import com.usian.mapper.TbContentMapper;
 import com.usian.pojo.TbContentCategory;
 import com.usian.pojo.TbContentCategoryExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sun.rmi.runtime.NewThreadAction;
 
 import java.util.Date;
 import java.util.List;
@@ -43,4 +45,29 @@ public class ContentCategoryServicelmpl implements ContentCategoryService {
         }
         return insertSelectiveNum;
     }
+
+    @Override
+    public Integer deleteContentCategoryById(Long categoryId) {
+        TbContentCategory tbContentCategory = tbContentCategoryMapper.selectByPrimaryKey(categoryId);
+        if (tbContentCategory.getIsParent()){
+            return 0;
+        }
+        tbContentCategoryMapper.deleteByPrimaryKey(categoryId);
+
+        TbContentCategoryExample tbContentCategoryExample = new TbContentCategoryExample();
+        TbContentCategoryExample.Criteria criteria = tbContentCategoryExample.createCriteria();
+        criteria.andParentIdEqualTo(tbContentCategory.getParentId());
+
+        List<TbContentCategory> tbContentCategoryList = tbContentCategoryMapper.selectByExample(tbContentCategoryExample);
+        if (tbContentCategoryList.size()==0 || tbContentCategoryList==null){
+            TbContentCategory contentCategory = new TbContentCategory();
+            contentCategory.setId(tbContentCategory.getParentId());
+            contentCategory.setIsParent(false);
+            contentCategory.setUpdated(new Date());
+            tbContentCategoryMapper.updateByPrimaryKeySelective(contentCategory);
+        }
+        return 200;
+    }
+
+
 }
