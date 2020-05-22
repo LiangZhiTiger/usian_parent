@@ -1,6 +1,6 @@
 package com.usian.comtroller;
 
-import com.usian.feign.ItemServiceFeignClient;
+import com.usian.feign.ItemServiceFeign;
 import com.usian.pojo.TbItemCat;
 import com.usian.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +15,13 @@ import java.util.List;
 public class ItemCatController {
 
     @Autowired
-    private ItemServiceFeignClient itemServiceFeignClient;
+    private ItemServiceFeign itemServiceFeign;
     /**
      * 根据id查询商品的类目
      */
     @RequestMapping("/selectItemCategoryByParentId")
     public Result selectItemCategoryByParentId(@RequestParam(defaultValue = "0") Long id){
-        List<TbItemCat> itemCatList = itemServiceFeignClient.selectItemCategoryByParentId(id);
+        List<TbItemCat> itemCatList = itemServiceFeign.selectItemCategoryByParentId(id);
 
         if(itemCatList!=null && itemCatList.size()!=0){
             return Result.ok(itemCatList);

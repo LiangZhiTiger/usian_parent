@@ -1,6 +1,6 @@
 package com.usian.comtroller;
 
-import com.usian.feign.ItemServiceFeignClient;
+import com.usian.feign.ItemServiceFeign;
 import com.usian.pojo.TbItemParam;
 import com.usian.utils.PageResult;
 import com.usian.utils.Result;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ItemParemController {
 
     @Autowired
-    private ItemServiceFeignClient itemServiceFeignClient;
+    private ItemServiceFeign itemServiceFeign;
 
     /**
      *
@@ -25,7 +25,7 @@ public class ItemParemController {
      */
     @RequestMapping("/selectItemParamByItemCatId/{itemCatId}")
     public Result selectItemParamByItemCatId(@PathVariable Long itemCatId){
-        TbItemParam tbItemParam = itemServiceFeignClient.selectItemParamByItemCatId(itemCatId);
+        TbItemParam tbItemParam = itemServiceFeign.selectItemParamByItemCatId(itemCatId);
         if(tbItemParam!=null){
             return Result.ok(tbItemParam);
         }
@@ -40,7 +40,7 @@ public class ItemParemController {
      */
     @RequestMapping("/selectItemParamAll")
     public Result selectItemParamAll(@RequestParam(defaultValue = "1") Integer page,@RequestParam(defaultValue = "20") Integer rows){
-        PageResult pageResult = itemServiceFeignClient.selectItemParamAll(page,rows);
+        PageResult pageResult = itemServiceFeign.selectItemParamAll(page,rows);
         if (pageResult.getResult().size()>0){
             return Result.ok(pageResult);
         }
@@ -55,7 +55,7 @@ public class ItemParemController {
      */
     @RequestMapping("/insertItemParam")
     public Result insertItemParam(Long itemCatId,String paramData){
-        Integer num = itemServiceFeignClient.insertItemParam(itemCatId,paramData);
+        Integer num = itemServiceFeign.insertItemParam(itemCatId,paramData);
         if (num==1){
             return  Result.ok();
         }
@@ -69,7 +69,7 @@ public class ItemParemController {
      */
     @RequestMapping("/deleteItemParamById")
     public Result deleteItemParamById(Long id){
-        Integer num = itemServiceFeignClient.deleteItemParamById(id);
+        Integer num = itemServiceFeign.deleteItemParamById(id);
         if (num==1){
             return Result.ok();
         }
