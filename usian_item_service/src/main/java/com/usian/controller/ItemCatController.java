@@ -26,6 +26,10 @@ public class ItemCatController {
        return itemCatService.selectItemCategoryByParentId(id);
     }
 
+    /**
+     * 商品类目查询
+     * @return
+     */
     @RequestMapping("/selectItemCategoryAll")
     public CatResult selectItemCategoryAll(){
         return itemCatService.selectItemCategoryAll();
