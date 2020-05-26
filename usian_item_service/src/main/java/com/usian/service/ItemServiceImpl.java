@@ -60,7 +60,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Integer insertTbItem(TbItem tbItem, String desc, String itemParams) {
-
         //补齐tbitem的数据
         long itemId = IDUtils.genItemId();
         Date date = new Date();
@@ -90,30 +89,65 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Map<String,Object> preUpdateItem(Long id) {
-
+    public Map<String,Object> preUpdateItem(Long itemId) {
         Map<String,Object> map = new HashMap<>();
 
-        TbItem tbItems = tbItemMapper.selectByPrimaryKey(id);
+        //查询商品基本信息
+        TbItem item = tbItemMapper.selectByPrimaryKey(itemId);
+        map.put("item",item);
 
-        TbItemDesc tbItemDesc = tbItemDescMapper.selectByPrimaryKey(id);
+        //查询商品所属类目
+        TbItemCat itemCat = this.tbItemCatMapper.selectByPrimaryKey(item.getCid());
+        map.put("itemCat", itemCat.getName());
 
-        TbItemCat tbItemCat = tbItemCatMapper.selectByPrimaryKey(tbItems.getCid());
+        //查询商品介绍
+        TbItemDesc itemDesc = tbItemDescMapper.selectByPrimaryKey(itemId);
+        map.put("itemDesc",itemDesc.getItemDesc());
 
-        map.put("tbItems",tbItems);
-        map.put("tbItemDesc",tbItemDesc);
-        map.put("tbItemCat",tbItemCat);
+        //查询商品规格参数
+        TbItemParamItemExample tbItemParamItemExample = new TbItemParamItemExample();
+        TbItemParamItemExample.Criteria tbItemParamItemExampleCriteria = tbItemParamItemExample.createCriteria();
+        tbItemParamItemExampleCriteria.andItemIdEqualTo(itemId);
+        List<TbItemParamItem> tbItemParamItems = tbItemParamItemMapper.selectByExampleWithBLOBs(tbItemParamItemExample);
+        if (tbItemParamItems.size()>0 && tbItemParamItems!=null){
+            map.put("itemParamItem",tbItemParamItems.get(0).getParamData());
+        }
 
         return map;
-
-
-
     }
 
     @Override
     public Integer deleteItemById(Long itemId) {
-
         Integer num = tbItemMapper.deleteByPrimaryKey(itemId);
+
         return num;
+    }
+
+    @Override
+    public Integer updateTbItem(TbItem tbItem, String desc, String itemParams) {
+        Date date = new Date();
+        tbItem.setStatus((byte)1);
+        tbItem.setUpdated(date);
+        int updateItem = tbItemMapper.updateByPrimaryKeySelective(tbItem);
+
+        TbItemDesc tbItemDesc = new TbItemDesc();
+        tbItemDesc.setItemId(tbItem.getId());
+        tbItemDesc.setItemDesc(desc);
+        tbItemDesc.setUpdated(date);
+        int updateDesc = tbItemDescMapper.updateByPrimaryKeySelective(tbItemDesc);
+
+        TbItemParamItemExample tbItemParamItemExample = new TbItemParamItemExample();
+        TbItemParamItemExample.Criteria tbItemParamItemExampleCriteria = tbItemParamItemExample.createCriteria();
+        tbItemParamItemExampleCriteria.andItemIdEqualTo(tbItem.getId());
+        List<TbItemParamItem> tbpa = tbItemParamItemMapper.selectByExample(tbItemParamItemExample);
+
+        TbItemParamItem tbItemParamItem = new TbItemParamItem();
+        tbItemParamItem.setId(tbpa.get(0).getId());
+        tbItemParamItem.setItemId(tbItem.getId());
+        tbItemParamItem.setParamData(itemParams);
+        tbItemParamItem.setUpdated(date);
+        int updateParam = tbItemParamItemMapper.updateByPrimaryKeySelective(tbItemParamItem);
+
+        return updateItem+updateDesc+updateParam;
     }
 }

@@ -50,9 +50,8 @@ public class ItemController {
 
     //预修改数据
     @RequestMapping("/preUpdateItem")
-    public Map<String,Object> preUpdateItem(@RequestParam Long id){
-        Map<String,Object> map = itemService.preUpdateItem(id);
-        return map;
+    public Map<String,Object> preUpdateItem(Long itemId){
+        return itemService.preUpdateItem(itemId);
     }
 
     /**
@@ -66,5 +65,8 @@ public class ItemController {
         return num;
     }
 
-
+    @RequestMapping("/updateTbItem")
+    public Integer updateTbItem(@RequestBody TbItem tbItem,String desc,String itemParams){
+        return itemService.updateTbItem(tbItem,desc,itemParams);
+    }
 }

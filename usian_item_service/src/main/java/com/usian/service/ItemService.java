@@ -14,8 +14,10 @@ public interface ItemService {
 
     Integer insertTbItem(TbItem tbItem, String desc, String itemParams);
 
-    Map<String,Object> preUpdateItem(Long id);
+    Map<String,Object> preUpdateItem(Long itemId);
 
     Integer deleteItemById(Long itemId);
+
+    Integer updateTbItem(TbItem tbItem, String desc, String itemParams);
 }
 

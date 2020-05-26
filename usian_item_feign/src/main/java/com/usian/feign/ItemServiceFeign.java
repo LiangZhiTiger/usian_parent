@@ -58,7 +58,7 @@ public interface ItemServiceFeign{
 
     //预修改数据
     @RequestMapping("/service/item/preUpdateItem")
-    Map<String,Object> preUpdateItem(@RequestParam Long id);
+    Map<String,Object> preUpdateItem(@RequestParam Long itemId);
 
     /**
      * 根据商品Id删除
@@ -100,4 +100,7 @@ public interface ItemServiceFeign{
      */
     @RequestMapping("/service/itemCat/selectItemCategoryAll")
     CatResult selectItemCategoryAll();
+
+    @RequestMapping("/service/item/updateTbItem")
+    Integer updateTbItem(TbItem tbItem,@RequestParam String desc,@RequestParam String itemParams);
 }

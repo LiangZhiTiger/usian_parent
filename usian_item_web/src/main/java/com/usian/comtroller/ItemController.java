@@ -63,7 +63,11 @@ public class ItemController {
         return Result.error("添加失败");
     }
 
-    //预更新数据
+    /**
+     * 修改商品的回显
+     * @param itemId
+     * @return
+     */
     @RequestMapping("/preUpdateItem")
     public Result preUpdateItem(Long itemId){
         Map<String,Object> map = itemServiceFeign.preUpdateItem(itemId);
@@ -73,7 +77,20 @@ public class ItemController {
         return Result.error("没有查询到数据");
     }
 
-    //删除
+    @RequestMapping("/updateTbItem")
+    public Result updateTbItem(TbItem tbItem,String desc,String itemParams){
+        Integer num = itemServiceFeign.updateTbItem(tbItem,desc,itemParams);
+        if (num==3){
+            return Result.ok();
+        }
+        return Result.error("失败");
+    }
+
+    /**
+     * 删除商品
+     * @param itemId
+     * @return
+     */
     @RequestMapping("deleteItemById")
     public Result deleteItemById(Long itemId){
         Integer num = itemServiceFeign.deleteItemById(itemId);
