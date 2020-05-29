@@ -69,12 +69,16 @@ public class ContentServicelmpl implements ContentService {
         Date date = new Date();
         tbContent.setCreated(date);
         tbContent.setUpdated(date);
-        return tbContentMapper.insertSelective(tbContent);
+        int num = tbContentMapper.insertSelective(tbContent);
+        redisClient.hdel(PORTAL_AD_KEY,AD_CATEGORY_ID.toString());
+        return num;
     }
 
     @Override
     public Integer deleteContentByIds(Long ids) {
-        return tbContentMapper.deleteByPrimaryKey(ids);
+        int num = tbContentMapper.deleteByPrimaryKey(ids);
+        redisClient.hdel(PORTAL_AD_KEY,AD_CATEGORY_ID.toString());
+        return num;
     }
 
     @Override
