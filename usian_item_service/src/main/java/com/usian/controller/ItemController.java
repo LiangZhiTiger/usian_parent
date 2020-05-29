@@ -65,6 +65,13 @@ public class ItemController {
         return num;
     }
 
+    /**
+     * 修改商品
+     * @param tbItem
+     * @param desc
+     * @param itemParams
+     * @return
+     */
     @RequestMapping("/updateTbItem")
     public Integer updateTbItem(@RequestBody TbItem tbItem,String desc,String itemParams){
         return itemService.updateTbItem(tbItem,desc,itemParams);
