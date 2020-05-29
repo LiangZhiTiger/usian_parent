@@ -5,9 +5,9 @@ import com.github.pagehelper.PageInfo;
 import com.usian.mapper.TbContentMapper;
 import com.usian.pojo.TbContent;
 import com.usian.pojo.TbContentExample;
+import com.usian.redis.RedisClient;
 import com.usian.utils.AdNode;
 import com.usian.utils.PageResult;
-import com.usian.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -36,8 +36,14 @@ public class ContentServicelmpl implements ContentService {
     @Value("${AD_WIDTHB}")
     private Integer AD_WIDTHB;
 
+    @Value("${PORTAL_AD_KEY}")
+    private String PORTAL_AD_KEY;
+
     @Autowired
     private TbContentMapper tbContentMapper;
+
+    @Autowired
+    private RedisClient redisClient;
 
 
     @Override
@@ -73,6 +79,10 @@ public class ContentServicelmpl implements ContentService {
 
     @Override
     public List<AdNode> selectFrontendContentByAD() {
+        List<AdNode> adNodesRedis = (List<AdNode>)redisClient.hget(PORTAL_AD_KEY,AD_CATEGORY_ID.toString());
+        if (adNodesRedis!=null){
+            return adNodesRedis;
+        }
         TbContentExample contentExample = new TbContentExample();
         TbContentExample.Criteria criteria = contentExample.createCriteria();
         criteria.andCategoryIdEqualTo(AD_CATEGORY_ID);
@@ -89,6 +99,7 @@ public class ContentServicelmpl implements ContentService {
             adNode.setWidthB(AD_WIDTHB);
             adNodeList.add(adNode);
         }
+        redisClient.hset(PORTAL_AD_KEY,AD_CATEGORY_ID.toString(),adNodeList);
         return adNodeList;
     }
 }
