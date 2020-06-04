@@ -824,3 +824,8 @@
     searchSourceBuilder.query(boolQueryBuilder);
     searchRequest.source(searchSourceBuilder);
     searchResponse = restHighLevelClient.search(searchRequest,RequestOptions.DEFAULT);
+
+2020-06-04工作内容:
+    1、那个高亮的单词忘记，高亮设置
+    2、ElasticSearch集群搭建
+    3、ElasticSearch整合项目，将商品信息导入到索引库中
