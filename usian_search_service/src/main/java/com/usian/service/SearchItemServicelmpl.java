@@ -9,18 +9,28 @@ import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.get.GetIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.IndicesClient;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -123,6 +133,49 @@ public class SearchItemServicelmpl implements SearchItemService {
         } catch (IOException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    @Override
+    public List<SearchItem> selectByQ(String q, Long page, Integer pageSize) {
+        try {
+            SearchRequest searchRequest = new SearchRequest(ES_INDEX_NAME);
+            searchRequest.types(ES_TYPE_NAME);
+
+            //搜索filed的区域
+            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+            searchSourceBuilder.query(QueryBuilders.multiMatchQuery(q,new String[]{"item_title","item_desc","item_sell_point","item_category_name"}));
+
+            //分页
+            Long from = (page-1)*pageSize;
+            searchSourceBuilder.from(from.intValue());
+            searchSourceBuilder.size(pageSize);
+
+            //高亮
+            HighlightBuilder highlightBuilder = new HighlightBuilder();
+            highlightBuilder.preTags("<font color='red'>");
+            highlightBuilder.postTags("</font>");
+            highlightBuilder.field("item_title");
+
+            searchSourceBuilder.highlighter(highlightBuilder);
+            searchRequest.source(searchSourceBuilder);
+            SearchResponse search = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            SearchHits hits = search.getHits();
+            SearchHit[] hits1 = hits.getHits();
+
+            List<SearchItem> searchItemList = new ArrayList<>();
+            for (SearchHit documentFields : hits1) {
+                SearchItem searchItem = JsonUtils.jsonToPojo(documentFields.getSourceAsString(), SearchItem.class);
+                Map<String, HighlightField> highlightFields = documentFields.getHighlightFields();
+                if (highlightBuilder!=null&&highlightFields.size()>0){
+                    searchItem.setItem_title(highlightFields.get("item_title").getFragments()[0].toString());
+                }
+                searchItemList.add(searchItem);
+            }
+            return searchItemList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
