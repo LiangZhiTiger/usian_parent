@@ -2,11 +2,14 @@ package com.usian.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.usian.mapper.*;
+import com.usian.mapper.TbItemCatMapper;
+import com.usian.mapper.TbItemDescMapper;
+import com.usian.mapper.TbItemMapper;
+import com.usian.mapper.TbItemParamItemMapper;
 import com.usian.pojo.*;
 import com.usian.utils.IDUtils;
 import com.usian.utils.PageResult;
-import com.usian.utils.Result;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +34,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Autowired
     private TbItemCatMapper tbItemCatMapper;
+
+    @Autowired
+    private AmqpTemplate amqpTemplate;
 
     @Override
     public TbItem selectItemInfo(Long itemId){
@@ -85,6 +91,9 @@ public class ItemServiceImpl implements ItemService {
         tbItemParamItem.setParamData(itemParams);
         Integer itemParamItemNum = tbItemParamItemMapper.insertSelective(tbItemParamItem);
 
+        //添加商品发布消息到mq
+        amqpTemplate.convertAndSend("item_exchage","item.add", itemId);
+
         return tbitemNum+tbitemDescNum+itemParamItemNum;
     }
 
@@ -125,17 +134,21 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Integer updateTbItem(TbItem tbItem, String desc, String itemParams) {
+        //补齐商品数据
+        Long itemId = IDUtils.genItemId();
         Date date = new Date();
         tbItem.setStatus((byte)1);
         tbItem.setUpdated(date);
         int updateItem = tbItemMapper.updateByPrimaryKeySelective(tbItem);
 
+        //补齐商品描述
         TbItemDesc tbItemDesc = new TbItemDesc();
         tbItemDesc.setItemId(tbItem.getId());
         tbItemDesc.setItemDesc(desc);
         tbItemDesc.setUpdated(date);
         int updateDesc = tbItemDescMapper.updateByPrimaryKeySelective(tbItemDesc);
 
+        //补齐商品规格参数
         TbItemParamItemExample tbItemParamItemExample = new TbItemParamItemExample();
         TbItemParamItemExample.Criteria tbItemParamItemExampleCriteria = tbItemParamItemExample.createCriteria();
         tbItemParamItemExampleCriteria.andItemIdEqualTo(tbItem.getId());

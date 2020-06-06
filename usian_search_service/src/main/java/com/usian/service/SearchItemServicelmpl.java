@@ -9,6 +9,7 @@ import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.get.GetIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.IndicesClient;
@@ -108,6 +109,10 @@ public class SearchItemServicelmpl implements SearchItemService {
         return createIndexResponse.isAcknowledged();
     }
 
+    /**
+     * 商品数据导入索引库
+     * @return
+     */
     @Override
     public Boolean importAll() {
         try {
@@ -136,6 +141,13 @@ public class SearchItemServicelmpl implements SearchItemService {
         }
     }
 
+    /**
+     * 商品搜索
+     * @param q
+     * @param page
+     * @param pageSize
+     * @return
+     */
     @Override
     public List<SearchItem> selectByQ(String q, Long page, Integer pageSize) {
         try {
@@ -156,8 +168,8 @@ public class SearchItemServicelmpl implements SearchItemService {
             highlightBuilder.preTags("<font color='red'>");
             highlightBuilder.postTags("</font>");
             highlightBuilder.field("item_title");
-
             searchSourceBuilder.highlighter(highlightBuilder);
+
             searchRequest.source(searchSourceBuilder);
             SearchResponse search = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
             SearchHits hits = search.getHits();
@@ -177,5 +189,20 @@ public class SearchItemServicelmpl implements SearchItemService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * 同步索引库
+     * @param itemId
+     * @return
+     * @throws IOException
+     */
+    @Override
+    public int insertDocument(String itemId) throws Exception {
+        SearchItem searchItem = searchItemMapper.insertDocument(Long.valueOf(itemId));
+        IndexRequest indexRequest = new IndexRequest(ES_INDEX_NAME, ES_TYPE_NAME);
+        indexRequest.source(JsonUtils.objectToJson(searchItem), XContentType.JSON);
+        IndexResponse index = restHighLevelClient.index(indexRequest, RequestOptions.DEFAULT);
+        return index.getShardInfo().getFailed();
     }
 }

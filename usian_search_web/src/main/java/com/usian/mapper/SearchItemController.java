@@ -26,12 +26,9 @@ public class SearchItemController {
     }
 
     @RequestMapping("/list")
-    public Result selectByQ(String q,@RequestParam(defaultValue = "1")Long page,@RequestParam(defaultValue = "20")Integer pageSize){
-        List<SearchItem> searchItemList = searchItemFeign.selectByQ(q,page,pageSize);
-        if (searchItemList!=null&&searchItemList.size()>0){
-            return Result.ok(searchItemList);
-        }
-        return Result.error("查无结果");
+    public List<SearchItem> selectByQ(String q,@RequestParam(defaultValue = "1")Long page,@RequestParam(defaultValue = "20")Integer pageSize){
+        return searchItemFeign.selectByQ(q,page,pageSize);
+
     }
 
 }

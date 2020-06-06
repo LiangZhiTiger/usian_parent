@@ -1851,3 +1851,21 @@ feign.FeignException$InternalServerError: status 500 reading SearchItemFeign#imp
 2020-06-05 22:05:09.985 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.shared.resolver.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
 2020-06-05 22:05:14.883 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.shared.resolver.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
 2020-06-05 22:06:10.096 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.shared.resolver.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2020-06-05 22:10:09.987 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.shared.resolver.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2020-06-05 22:10:14.884 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.shared.resolver.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2020-06-05 22:11:10.098 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.shared.resolver.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2020-06-05 22:13:20.835 [Thread-3] INFO  o.s.c.n.e.serviceregistry.EurekaServiceRegistry - Unregistering application USIAN-ITEM-SERVICE with eureka with status DOWN
+2020-06-05 22:13:20.835 [Thread-3] WARN  com.netflix.discovery.DiscoveryClient - Saw local status change event StatusChangeEvent [timestamp=1591366400835, current=DOWN, previous=UP]
+2020-06-05 22:13:20.835 [DiscoveryClient-InstanceInfoReplicator-0] INFO  com.netflix.discovery.DiscoveryClient - DiscoveryClient_USIAN-ITEM-SERVICE/192.168.124.1:usian-item-service:8090: registering service...
+2020-06-05 22:13:20.843 [DiscoveryClient-InstanceInfoReplicator-0] INFO  com.netflix.discovery.DiscoveryClient - DiscoveryClient_USIAN-ITEM-SERVICE/192.168.124.1:usian-item-service:8090 - registration status: 204
+2020-06-05 22:13:20.850 [Thread-3] INFO  o.s.scheduling.concurrent.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+2020-06-05 22:13:20.856 [Thread-3] INFO  com.alibaba.druid.pool.DruidDataSource - {dataSource-1} closed
+2020-06-05 22:13:20.935 [Thread-3] INFO  o.s.scheduling.concurrent.ThreadPoolTaskExecutor - Shutting down ExecutorService
+2020-06-05 22:13:20.946 [Thread-3] INFO  com.netflix.discovery.DiscoveryClient - Shutting down DiscoveryClient ...
+2020-06-05 22:13:23.948 [Thread-3] INFO  com.netflix.discovery.DiscoveryClient - Unregistering ...
+2020-06-05 22:13:23.951 [Thread-3] INFO  com.netflix.discovery.DiscoveryClient - DiscoveryClient_USIAN-ITEM-SERVICE/192.168.124.1:usian-item-service:8090 - deregister  status: 200
+2020-06-05 22:13:23.958 [Thread-3] INFO  com.netflix.discovery.DiscoveryClient - Completed shut down of DiscoveryClient
+2020-06-05 22:15:09.988 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.shared.resolver.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2020-06-05 22:15:14.885 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.shared.resolver.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2020-06-05 22:20:09.989 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.shared.resolver.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2020-06-05 22:20:14.885 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.shared.resolver.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
