@@ -52,8 +52,14 @@ public class ItemServiceImpl implements ItemService {
     @Value("${DESC}")
     private String DESC;
 
+    @Value("${PARAM}")
+    private String PARAM;
+
     @Value("${ITEM_INFO_EXPIRE}")
     private Integer ITEM_INFO_EXPIRE;
+
+    @Value("${SETNX_BASC_LOCK_KEY}")
+    private String SETNX_BASC_LOCK_KEY;
 
 //    @Override
 //    public TbItem selectItemInfo(Long itemId){
@@ -145,6 +151,10 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Integer deleteItemById(Long itemId) {
         Integer num = tbItemMapper.deleteByPrimaryKey(itemId);
+        //Redis缓存同步
+        redisClient.del(ITEM_INFO + ":" + itemId + ":" + BASE);
+        redisClient.del(ITEM_INFO + ":" + itemId + ":" + DESC);
+        redisClient.del(ITEM_INFO + ":" + itemId + ":" + PARAM);
 
         return num;
     }
@@ -178,6 +188,12 @@ public class ItemServiceImpl implements ItemService {
         tbItemParamItem.setUpdated(date);
         int updateParam = tbItemParamItemMapper.updateByPrimaryKeySelective(tbItemParamItem);
 
+        //Redis缓存同步
+        redisClient.del(ITEM_INFO + ":" + itemId + ":" + BASE);
+        redisClient.del(ITEM_INFO + ":" + itemId + ":" + DESC);
+        redisClient.del(ITEM_INFO + ":" + itemId + ":" + PARAM);
+
+
         return updateItem+updateDesc+updateParam;
     }
 
@@ -188,10 +204,28 @@ public class ItemServiceImpl implements ItemService {
         if (tbItem!=null){
             return tbItem;
         }
-        //Redis缓存中没有，则查询数据库再存在Redis缓存中
-        TbItem item = tbItemMapper.selectByPrimaryKey(itemId);
-        redisClient.set(ITEM_INFO + ":" + itemId + ":" + BASE, item);
-        return item;
+        //Redis缓存中没有，则查询数据库再存在Redis缓存
+        /*****************解决缓存击穿***************/
+        if (redisClient.setnx(SETNX_BASC_LOCK_KEY+":"+itemId,itemId,30L)){
+            tbItem = tbItemMapper.selectByPrimaryKey(itemId);
+            /*****************解决缓存穿透*****************/
+            if (tbItem!=null){
+                redisClient.set(ITEM_INFO + ":" + itemId + ":" + BASE, tbItem);
+                redisClient.expire(ITEM_INFO + ":" + itemId + ":" + BASE,ITEM_INFO_EXPIRE);
+            }else{
+                redisClient.set(ITEM_INFO + ":" + itemId + ":" + BASE,null);
+                redisClient.expire(ITEM_INFO + ":" + itemId + ":" + BASE,30L);
+            }
+            redisClient.del(SETNX_BASC_LOCK_KEY+":"+itemId);
+            return tbItem;
+        }else{
+            try {
+                Thread.sleep(1000);
+            }catch (InterruptedException e){
+                e.printStackTrace();
+            }
+            return selectItemInfo(itemId);
+        }
     }
 
     @Override
@@ -202,9 +236,27 @@ public class ItemServiceImpl implements ItemService {
             return tbItemDesc;
         }
         //Redis缓存中没有，则查询数据库再存在Redis缓存中
-        TbItemDesc itemDesc = tbItemDescMapper.selectByPrimaryKey(itemId);
-        redisClient.set(ITEM_INFO + ":" + itemId + ":" + DESC, itemDesc);
-        return itemDesc;
+        /*****************解决缓存击穿***************/
+        if (redisClient.setnx(SETNX_BASC_LOCK_KEY+":"+itemId,itemId,30L)){
+            TbItemDesc itemDesc = tbItemDescMapper.selectByPrimaryKey(itemId);
+            /*****************解决缓存穿透*****************/
+            if (itemDesc!=null){
+                redisClient.set(ITEM_INFO + ":" + itemId + ":" + DESC, itemDesc);
+                redisClient.expire(ITEM_INFO + ":" + itemId + ":" + DESC,ITEM_INFO_EXPIRE);
+            }else {
+                redisClient.set(ITEM_INFO + ":" + itemId + ":" + DESC, null);
+                redisClient.expire(ITEM_INFO + ":" + itemId + ":" + DESC,30L);
+            }
+            redisClient.del(SETNX_BASC_LOCK_KEY+":"+itemId);
+            return itemDesc;
+        }else {
+            try {
+                Thread.sleep(1000);
+            }catch (InterruptedException e){
+                e.printStackTrace();
+            }
+            return selectItemDescByItemId(itemId);
+        }
     }
 
 

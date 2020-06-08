@@ -37,6 +37,9 @@ public class ItemParamServiceImpl implements ItemParamService {
     @Value("${ITEM_INFO_EXPIRE}")
     private Integer ITEM_INFO_EXPIRE;
 
+    @Value("${SETNX_BASC_LOCK_KEY}")
+    private String SETNX_BASC_LOCK_KEY;
+
     @Override
     public TbItemParam selectItemParamByItemCatId(Long itemCatId) {
 
@@ -94,14 +97,28 @@ public class ItemParamServiceImpl implements ItemParamService {
             return tbItemParamItem;
         }
         //Redis缓存中没有，则查询数据库再存在Redis缓存中
-        TbItemParamItemExample example = new TbItemParamItemExample();
-        TbItemParamItemExample.Criteria criteria = example.createCriteria();
-        criteria.andItemIdEqualTo(itemId);
-        List<TbItemParamItem> tbItemParamItems = tbItemParamItemMapper.selectByExampleWithBLOBs(example);
-        if (tbItemParamItems!=null&&tbItemParamItems.size()>0){
-            redisClient.set(ITEM_INFO + ":" + itemId + ":" + PARAM, tbItemParamItems.get(0));
+        if (redisClient.setnx(SETNX_BASC_LOCK_KEY+":"+itemId,itemId,30L)){
+            TbItemParamItemExample example = new TbItemParamItemExample();
+            TbItemParamItemExample.Criteria criteria = example.createCriteria();
+            criteria.andItemIdEqualTo(itemId);
+            List<TbItemParamItem> tbItemParamItems = tbItemParamItemMapper.selectByExampleWithBLOBs(example);
+            /*****************解决缓存穿透*****************/
+            if (tbItemParamItems!=null&&tbItemParamItems.size()>0){
+                redisClient.set(ITEM_INFO + ":" + itemId + ":" + PARAM, tbItemParamItems.get(0));
+                redisClient.expire(ITEM_INFO + ":" + itemId + ":" + PARAM,ITEM_INFO_EXPIRE);
+            }else {
+                redisClient.set(ITEM_INFO + ":" + itemId + ":" + PARAM, null);
+                redisClient.expire(ITEM_INFO + ":" + itemId + ":" + PARAM,30L);
+            }
+            redisClient.del(SETNX_BASC_LOCK_KEY+":"+itemId);
             return tbItemParamItems.get(0);
+        }else {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return selectTbItemParamItemByItemId(itemId);
         }
-        return null;
     }
 }
