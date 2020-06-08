@@ -2,6 +2,7 @@ package com.usian.feign;
 
 import com.usian.pojo.TbItem;
 import com.usian.pojo.TbItemCat;
+import com.usian.pojo.TbItemDesc;
 import com.usian.pojo.TbItemParam;
 import com.usian.utils.CatResult;
 import com.usian.utils.PageResult;
@@ -17,8 +18,8 @@ import java.util.Map;
 @FeignClient("usian-item-service")
 public interface ItemServiceFeign{
 
-    @RequestMapping("/service/item/selectItemInfo")
-    TbItem selectItemInfo(@RequestParam Long itemId);
+//    @RequestMapping("/service/item/selectItemInfo")
+//    TbItem selectItemInfo(@RequestParam Long itemId);
 
 
     /**
@@ -101,6 +102,37 @@ public interface ItemServiceFeign{
     @RequestMapping("/service/itemCat/selectItemCategoryAll")
     CatResult selectItemCategoryAll();
 
+    /**
+     * 修改商品
+     * @param tbItem
+     * @param desc
+     * @param itemParams
+     * @return
+     */
     @RequestMapping("/service/item/updateTbItem")
     Integer updateTbItem(TbItem tbItem,@RequestParam String desc,@RequestParam String itemParams);
+
+    /**
+     * 根据商品Id查询商品详情
+     * @param itemId
+     * @return
+     */
+    @RequestMapping("/service/item/selectItemInfo")
+   TbItem selectItemInfo(@RequestParam Long itemId);
+
+    /**
+     * 根据商品Id查询商品描述
+     * @param itemId
+     * @return
+     */
+    @RequestMapping("/service/item/selectItemDescByItemId")
+    TbItemDesc selectItemDescByItemId(@RequestParam Long itemId);
+
+    /**
+     * 根据商品Id查询商品规格参数
+     * @param itemId
+     * @return
+     */
+    @RequestMapping("/service/itemParam/selectTbItemParamItemByItemId")
+    TbItemParam selectTbItemParamItemByItemId(@RequestParam Long itemId);
 }

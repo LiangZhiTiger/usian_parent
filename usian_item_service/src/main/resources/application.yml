@@ -37,3 +37,10 @@ eureka:
   client:
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka/
+
+#商品详情
+ITEM_INFO: ITEM_INFO
+BASE: BASE
+DESC: DESC
+PARAM: PARAM
+ITEM_INFO_EXPIRE: 86400

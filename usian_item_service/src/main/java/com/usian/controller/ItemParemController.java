@@ -1,17 +1,13 @@
 package com.usian.controller;
 
 import com.usian.pojo.TbItemParam;
+import com.usian.pojo.TbItemParamItem;
 import com.usian.service.ItemParamService;
 import com.usian.utils.PageResult;
-import com.usian.utils.Result;
-import org.omg.CORBA.IRObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.ReportAsSingleViolation;
 
 @RestController
 @RequestMapping("/service/itemParam")
@@ -61,5 +57,15 @@ public class ItemParemController {
     @RequestMapping("/deleteItemParamById")
     public Integer deleteItemParamById(Long id){
         return itemParamService.deleteItemParamById(id);
+    }
+
+    /**
+     * 根据商品Id查询商品规格参数
+     * @param itemId
+     * @return
+     */
+    @RequestMapping("/selectTbItemParamItemByItemId")
+    public TbItemParamItem selectTbItemParamItemByItemId(Long itemId){
+        return itemParamService.selectTbItemParamItemByItemId(itemId);
     }
 }

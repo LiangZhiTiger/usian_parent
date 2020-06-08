@@ -16,6 +16,10 @@ public class SearchItemController {
     @Autowired
     private SearchItemFeign searchItemFeign;
 
+    /**
+     * 商品数据导入索引库
+     * @return
+     */
     @RequestMapping("/importAll")
     public Result importAll(){
         Boolean bool = searchItemFeign.importAll();
@@ -25,6 +29,13 @@ public class SearchItemController {
         return Result.error("导入失败");
     }
 
+    /**
+     * 通过索引库搜索到商品
+     * @param q
+     * @param page
+     * @param pageSize
+     * @return
+     */
     @RequestMapping("/list")
     public List<SearchItem> selectByQ(String q,@RequestParam(defaultValue = "1")Long page,@RequestParam(defaultValue = "20")Integer pageSize){
         return searchItemFeign.selectByQ(q,page,pageSize);

@@ -103,6 +103,7 @@ public class ContentServicelmpl implements ContentService {
             adNode.setWidthB(AD_WIDTHB);
             adNodeList.add(adNode);
         }
+
         redisClient.hset(PORTAL_AD_KEY,AD_CATEGORY_ID.toString(),adNodeList);
         return adNodeList;
     }

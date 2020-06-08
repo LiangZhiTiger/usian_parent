@@ -7,10 +7,12 @@ import com.usian.mapper.TbItemDescMapper;
 import com.usian.mapper.TbItemMapper;
 import com.usian.mapper.TbItemParamItemMapper;
 import com.usian.pojo.*;
+import com.usian.redis.RedisClient;
 import com.usian.utils.IDUtils;
 import com.usian.utils.PageResult;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,10 +27,10 @@ public class ItemServiceImpl implements ItemService {
 
     @Autowired
     private TbItemMapper tbItemMapper;
-    
+
     @Autowired
     private TbItemDescMapper tbItemDescMapper;
-    
+
     @Autowired
     private TbItemParamItemMapper tbItemParamItemMapper;
 
@@ -38,10 +40,25 @@ public class ItemServiceImpl implements ItemService {
     @Autowired
     private AmqpTemplate amqpTemplate;
 
-    @Override
-    public TbItem selectItemInfo(Long itemId){
-        return tbItemMapper.selectByPrimaryKey(itemId);
-    }
+    @Autowired
+    private RedisClient redisClient;
+
+    @Value("${ITEM_INFO}")
+    private String ITEM_INFO;
+
+    @Value("${BASE}")
+    private String BASE;
+
+    @Value("${DESC}")
+    private String DESC;
+
+    @Value("${ITEM_INFO_EXPIRE}")
+    private Integer ITEM_INFO_EXPIRE;
+
+//    @Override
+//    public TbItem selectItemInfo(Long itemId){
+//        return tbItemMapper.selectByPrimaryKey(itemId);
+//    }
 
     @Override
     public PageResult selectTbItemAllByPage(Integer page, Integer rows) {
@@ -163,4 +180,32 @@ public class ItemServiceImpl implements ItemService {
 
         return updateItem+updateDesc+updateParam;
     }
+
+    @Override
+    public TbItem selectItemInfo(Long itemId) {
+        //先从Redis缓存中查询
+        TbItem tbItem = (TbItem) redisClient.get(ITEM_INFO + ":" + itemId + ":" + BASE);
+        if (tbItem!=null){
+            return tbItem;
+        }
+        //Redis缓存中没有，则查询数据库再存在Redis缓存中
+        TbItem item = tbItemMapper.selectByPrimaryKey(itemId);
+        redisClient.set(ITEM_INFO + ":" + itemId + ":" + BASE, item);
+        return item;
+    }
+
+    @Override
+    public TbItemDesc selectItemDescByItemId(Long itemId) {
+        //先从Redis缓存中查询
+        TbItemDesc tbItemDesc = (TbItemDesc) redisClient.get(ITEM_INFO + ":" + itemId + ":" + DESC);
+        if (tbItemDesc!=null){
+            return tbItemDesc;
+        }
+        //Redis缓存中没有，则查询数据库再存在Redis缓存中
+        TbItemDesc itemDesc = tbItemDescMapper.selectByPrimaryKey(itemId);
+        redisClient.set(ITEM_INFO + ":" + itemId + ":" + DESC, itemDesc);
+        return itemDesc;
+    }
+
+
 }
