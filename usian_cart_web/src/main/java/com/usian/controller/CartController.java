@@ -15,10 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/frontend/cart")
@@ -62,7 +59,7 @@ public class CartController {
                 /***********在用户登录的状态下**********/
                 Map<String,TbItem> cart = getCartFromRodis(userId);
                 addItemToCart(cart,itemId,num);
-                Boolean bool = cartServiceFeign.addClientRedis(userId,cart);
+                Boolean bool = addClientRedis(userId,cart);
                 if (bool){
                     return Result.ok();
                 }
@@ -77,6 +74,16 @@ public class CartController {
     }
 
     /**
+     * 把购物车重新存入Redis
+     * @param userId
+     * @param cart
+     * @return
+     */
+    private Boolean addClientRedis(String userId, Map<String, TbItem> cart) {
+        return cartServiceFeign.addClientRedis(userId,cart);
+    }
+
+    /**
      * 查看购物车
      * @param userId
      * @param request
@@ -87,7 +94,7 @@ public class CartController {
     public Result showCart(String userId,HttpServletRequest request,HttpServletResponse response){
         try {
             //判断用户是否登录
-            ArrayList<TbItem> tbItems = new ArrayList<>();
+            List<TbItem> tbItems = new ArrayList<>();
             if (StringUtils.isBlank(userId)){
                 /**用户没有登录**/
                 Map<String, TbItem> cart = getCartFromCookie(request);
@@ -97,6 +104,11 @@ public class CartController {
                 }
             }else{
                 /**登录**/
+                Map<String, TbItem> cart = getCartFromRodis(userId);
+                Set<String> keys = cart.keySet();
+                for (String key:keys) {
+                    tbItems.add(cart.get(key));
+                }
             }
             return Result.ok(tbItems);
         }catch (Exception e){
@@ -128,6 +140,17 @@ public class CartController {
                 addClientCookie(request,response,map);
             }else{
                 /**登录修改购物车**/
+                Map<String, TbItem> cart = getCartFromRodis(userId);
+                TbItem tbItem = cart.get(itemId.toString());
+                if (tbItem!=null){
+                    tbItem.setNum(num);
+                }
+                cart.put(itemId.toString(),tbItem);
+                Boolean bool = addClientRedis(userId, cart);
+                if (bool){
+                    return Result.ok("修改成功");
+                }
+                return Result.error("修改失败");
             }
             return Result.ok();
         }catch (Exception e){
@@ -154,6 +177,13 @@ public class CartController {
                 addClientCookie(request,response,map);
             }else{
                 /**登录**/
+                Map<String, TbItem> cart = getCartFromRodis(userId);
+                cart.remove(itemId.toString());
+                Boolean bool = addClientRedis(userId, cart);
+                if (bool){
+                    return Result.ok("删除成功");
+                }
+                return Result.error("删除失败");
             }
             return Result.ok();
         }catch (Exception e){
