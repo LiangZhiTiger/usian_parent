@@ -57,6 +57,7 @@ public class CartController {
                 addClientCookie(request,response,cart);
             }else{
                 /***********在用户登录的状态下**********/
+                System.out.println(itemId);
                 Map<String,TbItem> cart = getCartFromRodis(userId);
                 addItemToCart(cart,itemId,num);
                 Boolean bool = addClientRedis(userId,cart);
