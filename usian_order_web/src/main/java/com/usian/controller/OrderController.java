@@ -18,6 +18,12 @@ public class OrderController {
     @Autowired
     private CartServiceFeign cartServiceFeign;
 
+    /**
+     * 展示订单页面
+     * @param ids
+     * @param userId
+     * @return
+     */
     @RequestMapping("/goSettlement")
     public Result goSettlement(String[] ids,String userId){
         List<TbItem> list = new ArrayList<>();
