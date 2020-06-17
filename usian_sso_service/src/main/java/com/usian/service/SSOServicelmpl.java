@@ -82,10 +82,10 @@ public class SSOServicelmpl implements SSOService {
         redisClient.expire(USER_INFO+":"+token,SESSION_EXPIRE);
 
         //返回用户信息
-        HashMap<String, String> map = new HashMap<>();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("token",token);
-        map.put("username",username);
-        map.put("password",password);
+        map.put("username",tbUser.getUsername());
+        map.put("userid",tbUser.getId());
         return map;
     }
 
