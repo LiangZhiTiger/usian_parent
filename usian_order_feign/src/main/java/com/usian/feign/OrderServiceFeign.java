@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @FeignClient("usian-order-service")
 public interface OrderServiceFeign {
 
+    /**
+     * 结算订单
+     * @param orderInfo
+     * @return
+     */
     @RequestMapping("/service/order/insertOrder")
     String insertOrder(@RequestBody OrderInfo orderInfo);
 }

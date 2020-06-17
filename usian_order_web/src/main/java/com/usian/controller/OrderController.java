@@ -46,6 +46,13 @@ public class OrderController {
         return Result.error("结算失败");
     }
 
+    /**
+     * 结算订单
+     * @param orderItem
+     * @param tbOrder
+     * @param tbOrderShipping
+     * @return
+     */
     @RequestMapping("/insertOrder")
     public Result insertOrder(String orderItem,TbOrder tbOrder,TbOrderShipping tbOrderShipping) {
         OrderInfo orderInfo = new OrderInfo();
