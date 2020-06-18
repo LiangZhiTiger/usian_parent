@@ -1,12 +1,10 @@
 package com.usian.service;
 
+import com.usian.mapper.TbItemMapper;
 import com.usian.mapper.TbOrderItemMapper;
 import com.usian.mapper.TbOrderMapper;
 import com.usian.mapper.TbOrderShippingMapper;
-import com.usian.pojo.OrderInfo;
-import com.usian.pojo.TbOrder;
-import com.usian.pojo.TbOrderItem;
-import com.usian.pojo.TbOrderShipping;
+import com.usian.pojo.*;
 import com.usian.redis.RedisClient;
 import com.usian.utils.JsonUtils;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -42,6 +40,9 @@ public class OrderServicelmpl implements OrderService {
 
     @Autowired
     private TbOrderShippingMapper tbOrderShippingMapper;
+
+    @Autowired
+    private TbItemMapper tbItemMapper;
 
     @Autowired
     private AmqpTemplate amqpTemplate;
@@ -85,5 +86,42 @@ public class OrderServicelmpl implements OrderService {
         //订单页面结算成功以后发送请求扣除库存
         amqpTemplate.convertAndSend("order_exchage","order.add",orderId);
         return orderId.toString();
+    }
+
+    @Override
+    public List<TbOrder> selectOverTimeTbOrder() {
+        return tbOrderMapper.selectOverTimeTbOrder();
+    }
+
+    /**
+     * 关闭超时订单
+     * @param tbOrder
+     */
+    @Override
+    public void updateOverTimeTbOrder(TbOrder tbOrder) {
+        tbOrder.setStatus(6);
+        Date date = new Date();
+        tbOrder.setUpdateTime(date);
+        tbOrder.setEndTime(date);
+        tbOrder.setCloseTime(date);
+        tbOrderMapper.updateByPrimaryKeySelective(tbOrder);
+    }
+
+    /**
+     * 订单关闭之后修改库存
+     * @param tbOrder
+     */
+    @Override
+    public void updateTbItemByOrderId(TbOrder tbOrder) {
+        TbOrderItemExample example = new TbOrderItemExample();
+        TbOrderItemExample.Criteria criteria = example.createCriteria();
+        criteria.andOrderIdEqualTo(tbOrder.getOrderId());
+        List<TbOrderItem> tbOrderItems = tbOrderItemMapper.selectByExample(example);
+        for (TbOrderItem tbOrderItem:tbOrderItems) {
+            TbItem tbItem = tbItemMapper.selectByPrimaryKey(Long.valueOf(tbOrderItem.getItemId()));
+            tbItem.setNum(tbItem.getNum()+tbOrderItem.getNum());
+            tbItem.setUpdated(new Date());
+            tbItemMapper.updateByPrimaryKey(tbItem);
+        }
     }
 }
