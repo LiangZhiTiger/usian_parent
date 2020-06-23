@@ -42,7 +42,7 @@ public class MQSender implements ReturnCallback, ConfirmCallback {
      */
      public void confirm(CorrelationData correlationData, boolean ack, String cause) {
          if (ack){
-             //消息发送成功以后更新本地消息唯一发送或者删除本地消息
+             //消息发送成功以后更新本地消息为一或者删除本地消息
              String txNo = correlationData.getId();
              LocalMessage localMessage = new LocalMessage();
              localMessage.setTxNo(txNo);

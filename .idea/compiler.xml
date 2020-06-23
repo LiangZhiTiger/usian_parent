@@ -34,6 +34,9 @@
         <module name="usian_sso_web" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="common_zuul" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
